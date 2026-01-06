@@ -97,8 +97,11 @@ module TestDiscovery =
     let discoveredTests = ConcurrentDictionary<Guid, TestCase>()
 
     let getTestCases (ids: Guid seq) =
-        discoveredTests
-        |> Seq.choose (fun kv -> if ids |> Seq.contains kv.Key then Some kv.Value else None)
+        ids
+        |> Seq.choose (fun id ->
+            match discoveredTests.TryGetValue(id) with
+            | true, testCase -> Some testCase
+            | false, _ -> None)
 
     type PlaygroundTestDiscoveryHandler(waitFile: string, outputFile: string) =
         interface ITestDiscoveryEventsHandler2 with
