@@ -78,7 +78,15 @@ function M.discover_tests_in_project(runner, settings, project)
   logger.debug("neotest-vstest: Discovering tests using:")
   logger.debug(command)
 
+  vim.schedule(function()
+    logger.debug("neotest-vstest: Starting test discovery...")
+  end)
+
   runner(command)
+
+  vim.schedule(function()
+    vim.notify("neotest-vstest: Test discovery command started." .. project.dll_file)
+  end)
 
   logger.debug("neotest-vstest: Waiting for result file to populated...")
 
@@ -89,6 +97,10 @@ function M.discover_tests_in_project(runner, settings, project)
     local lines = lib.files.read_lines(output_file)
 
     logger.debug("neotest-vstest: file has been populated. Extracting test cases...")
+
+    vim.schedule(function()
+      vim.notify("neotest-vstest: Test discovery completed." .. project.dll_file)
+    end)
 
     for _, line in ipairs(lines) do
       ---@type { File: string, Test: table }
@@ -108,6 +120,9 @@ function M.discover_tests_in_project(runner, settings, project)
       tests_in_files[file] = vim.tbl_extend("force", tests, test)
     end
 
+    vim.schedule(function()
+      vim.notify("neotest-vstest: Total discovery completed")
+    end)
     -- DisplayName may be almost equal to FullyQualifiedName of a test
     -- In this case the DisplayName contains a lot of redundant information in the neotest tree.
     -- Thus we want to detect this for the test cases and if a match is found
@@ -129,6 +144,9 @@ function M.discover_tests_in_project(runner, settings, project)
     logger.trace(tests_in_files)
   end
 
+  vim.schedule(function()
+    vim.notify("neotest-vstest: Finished discovery")
+  end)
   return tests_in_files
 end
 
