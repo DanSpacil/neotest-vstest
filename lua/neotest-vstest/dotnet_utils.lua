@@ -391,6 +391,9 @@ function dotnet_utils.build_path(path)
     return false
   end
 
+  vim.schedule(function()
+    vim.notify_once("neotest-vstest: successfully built project " .. path, vim.log.levels.INFO)
+  end)
   return true
 end
 
